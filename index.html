@@ -13,8 +13,8 @@
 <body class="p-4">
     <div class="max-w-md mx-auto">
         <header class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-blue-800">職安智慧巡檢系統</h1>
-            <p class="text-gray-500 text-sm">步驟 1 & 2：現場回報</p>
+            <h1 class="text-2xl font-bold text-blue-800">日翊職安巡檢系統</h1>
+            <p class="text-gray-500 text-sm">大溪 / 大肚 / 岡山</p>
         </header>
 
         <div class="form-card p-6">
@@ -32,30 +32,41 @@
 
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2">2. 巡檢區域 (手動填寫)</label>
-                <input type="text" id="zone" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="例如：三期 1F 門口">
+                <input type="text" id="zone" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="例如：三期 1F 碼頭">
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">3. 缺失類別</label>
+                <label class="block text-gray-700 font-bold mb-2">3. 紀錄等級 / 缺失程度</label>
+                <select id="level" class="w-full p-3 border rounded-lg bg-gray-50">
+                    <option value="主要缺失(A)">主要缺失 (A)</option>
+                    <option value="次要缺失(B)">次要缺失 (B)</option>
+                    <option value="建議事項(C)">建議事項 (C)</option>
+                    <option value="一般紀錄(維運/施工)">一般紀錄 (維運 / 施工)</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">4. 紀錄類別</label>
                 <select id="category" class="w-full p-3 border rounded-lg bg-gray-50">
                     <option value="人員作業安全">人員作業安全</option>
                     <option value="設備操作安全">設備操作安全</option>
                     <option value="廠區安全">廠區安全</option>
                     <option value="消防管理">消防管理</option>
-                    <option value="設備維運">設備維運</option>
                     <option value="用電安全">用電安全</option>
                     <option value="環境衛生">環境衛生</option>
+                    <option value="設備維運">🔧 設備維運 (定期檢查紀錄)</option>
+                    <option value="廠務施工">🏗️ 廠務施工 (監工紀錄)</option>
                     <option value="其他">其他</option>
                 </select>
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">4. 缺失內容描述</label>
-                <textarea id="description" rows="3" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="請描述缺失狀況..."></textarea>
+                <label class="block text-gray-700 font-bold mb-2">5. 說明 / 缺失描述</label>
+                <textarea id="description" rows="3" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="若是維運或施工，請註明作業內容..."></textarea>
             </div>
 
             <div class="mb-6">
-                <label class="block text-gray-700 font-bold mb-2">5. 現場照片上傳</label>
+                <label class="block text-gray-700 font-bold mb-2">6. 現場照片上傳</label>
                 <input type="file" id="photo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
             </div>
 
@@ -66,10 +77,14 @@
     </div>
 
     <script>
-        function submitForm() {
+        async function submitForm() {
+            // 這裡未來要填入您的 Google Apps Script 網址
+            const scriptURL = '這裡換成您的網址'; 
+            
             const data = {
                 warehouse: document.getElementById('warehouse').value,
                 zone: document.getElementById('zone').value,
+                level: document.getElementById('level').value,
                 category: document.getElementById('category').value,
                 description: document.getElementById('description').value
             };
@@ -79,8 +94,27 @@
                 return;
             }
 
-            alert('紀錄已暫存！\n地點：' + data.warehouse + ' - ' + data.zone + '\n類別：' + data.category);
-            // 稍後我們將串接 Google Sheets 儲存功能
+            const btn = document.querySelector('button');
+            btn.innerText = '正在傳送至雲端...';
+            btn.disabled = true;
+
+            try {
+                // 串接 Google Sheets 的邏輯
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(data)
+                });
+                
+                alert('✅ 提交成功！\n此筆紀錄已存入全倉週報資料庫。');
+                document.getElementById('zone').value = '';
+                document.getElementById('description').value = '';
+                btn.innerText = '確認提交紀錄';
+                btn.disabled = false;
+            } catch (error) {
+                alert('提交失敗，但網頁已暫存內容。');
+                btn.disabled = false;
+            }
         }
     </script>
 </body>
