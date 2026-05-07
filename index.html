@@ -20,42 +20,43 @@
         <div class="form-card p-6">
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2">1. 選擇倉別</label>
-                <select id="warehouse" class="w-full p-3 border rounded-lg bg-gray-50" onchange="updateZones()">
+                <select id="warehouse" class="w-full p-3 border rounded-lg bg-gray-50">
                     <option value="">請選擇倉別</option>
                     <option value="大溪倉">大溪倉</option>
                     <option value="大肚倉">大肚倉</option>
                     <option value="岡山倉">岡山倉</option>
                     <option value="新光倉">新光倉</option>
+                    <option value="新光二倉">新光二倉</option>
                 </select>
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">2. 巡檢區域</label>
-                <select id="zone" class="w-full p-3 border rounded-lg bg-gray-50">
-                    <option value="">請先選擇倉別</option>
-                </select>
+                <label class="block text-gray-700 font-bold mb-2">2. 巡檢區域 (手動填寫)</label>
+                <input type="text" id="zone" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="例如：三期 1F 門口">
             </div>
 
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2">3. 缺失類別</label>
                 <select id="category" class="w-full p-3 border rounded-lg bg-gray-50">
-                    <option value="設備安全">設備安全</option>
-                    <option value="電氣安全">電氣安全</option>
-                    <option value="交通安全">交通安全</option>
+                    <option value="人員作業安全">人員作業安全</option>
+                    <option value="設備操作安全">設備操作安全</option>
+                    <option value="廠區安全">廠區安全</option>
+                    <option value="消防管理">消防管理</option>
+                    <option value="設備維運">設備維運</option>
+                    <option value="用電安全">用電安全</option>
                     <option value="環境衛生">環境衛生</option>
-                    <option value="個人防護具">個人防護具</option>
                     <option value="其他">其他</option>
                 </select>
             </div>
 
             <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2">4. 缺失內容描述</label>
-                <textarea id="description" rows="3" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="請輸入或點擊語音輸入內容..."></textarea>
+                <textarea id="description" rows="3" class="w-full p-3 border rounded-lg bg-gray-50" placeholder="請描述缺失狀況..."></textarea>
             </div>
 
             <div class="mb-6">
                 <label class="block text-gray-700 font-bold mb-2">5. 現場照片上傳</label>
-                <input type="file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                <input type="file" id="photo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
             </div>
 
             <button onclick="submitForm()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-lg hover:bg-blue-700 active:scale-95 transition-all">
@@ -65,32 +66,21 @@
     </div>
 
     <script>
-        // 區域資料對照表
-        const zoneData = {
-            "大溪倉": ["碼頭區", "三期1F", "三期2F", "輸送帶區", "包裝區", "辦公室"],
-            "大肚倉": ["碼頭作業區", "輸送帶區", "棧板作業區", "堆高機區"],
-            "岡山倉": ["倉儲作業區", "堆高機區", "消防設施區", "碼頭區", "維修區"],
-            "新光倉": ["A區", "B區", "出貨碼頭"]
-        };
-
-        function updateZones() {
-            const warehouse = document.getElementById('warehouse').value;
-            const zoneSelect = document.getElementById('zone');
-            zoneSelect.innerHTML = '<option value="">請選擇區域</option>';
-            
-            if (warehouse && zoneData[warehouse]) {
-                zoneData[warehouse].forEach(zone => {
-                    const option = document.createElement('option');
-                    option.value = zone;
-                    option.textContent = zone;
-                    zoneSelect.appendChild(option);
-                });
-            }
-        }
-
         function submitForm() {
-            alert('紀錄已儲存！(目前為單機測試模式，後續將串接 Google Sheets)');
-            // 未來這裡會放串接後台的程式碼
+            const data = {
+                warehouse: document.getElementById('warehouse').value,
+                zone: document.getElementById('zone').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value
+            };
+
+            if (!data.warehouse || !data.zone || !data.description) {
+                alert('請填寫完整資訊！');
+                return;
+            }
+
+            alert('紀錄已暫存！\n地點：' + data.warehouse + ' - ' + data.zone + '\n類別：' + data.category);
+            // 稍後我們將串接 Google Sheets 儲存功能
         }
     </script>
 </body>
