@@ -3,65 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日翊職安巡檢系統 3.3</title>
+    <title>日翊職安巡檢系統 3.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* 確保重新整理按鈕在手機上好點擊 */
-        #refreshBtn { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        /* 防止手機端選取反白 */
+        * { -webkit-tap-highlight-color: transparent; }
+        .stat-card { transition: all 0.2s ease; }
     </style>
 </head>
 <body class="p-4 bg-slate-50 pb-24 font-sans text-slate-900">
     <div class="max-w-md mx-auto">
-        <header class="bg-white p-5 rounded-3xl shadow-sm mb-4 border border-slate-100">
+        <header class="bg-white p-5 rounded-3xl shadow-sm mb-4 border border-slate-100 relative z-10">
             <div class="flex justify-between items-center mb-4">
-                <h1 class="text-xl font-black text-slate-800">日翊職安巡檢系統</h1>
-                <span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-bold">V3.3 專業版</span>
+                <h1 class="text-xl font-black text-slate-800 tracking-tighter">職安巡檢看板</h1>
+                <span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-bold uppercase">Live Mode</span>
             </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 mb-1">巡檢人員</label>
-                    <select id="inspector" onchange="fetchHistory()" class="w-full bg-slate-50 p-2 rounded-lg text-sm font-bold border-none focus:ring-2 focus:ring-blue-500">
-                        <option value="陳柏宏">1. 陳柏宏</option>
-                        <option value="莊文淮">2. 莊文淮</option>
-                        <option value="林澐緗">3. 林澐緗</option>
-                        <option value="呂胤鋒">4. 呂胤鋒</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 mb-1">目前分頁</label>
-                    <select id="viewWarehouse" onchange="fetchHistory()" class="w-full bg-slate-50 p-2 rounded-lg text-sm font-bold border-none">
-                        <option value="大溪倉">大溪倉</option>
-                        <option value="大肚倉">大肚倉</option>
-                        <option value="岡山倉">岡山倉</option>
-                    </select>
-                </div>
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 mb-1">目前巡檢人員</label>
+                <select id="inspector" onchange="fetchHistory()" class="w-full bg-slate-50 p-3 rounded-xl text-lg font-bold border-none focus:ring-2 focus:ring-blue-500">
+                    <option value="陳柏宏">1. 陳柏宏</option>
+                    <option value="莊文淮">2. 莊文淮</option>
+                    <option value="林澐緗">3. 林澐緗</option>
+                    <option value="呂胤鋒">4. 呂胤鋒</option>
+                </select>
             </div>
         </header>
 
         <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-3xl shadow-sm border-b-4 border-b-orange-400">
-                <div class="text-orange-500 text-3xl font-black" id="stat-count">0</div>
-                <div class="text-slate-400 text-[10px] font-bold mt-1 uppercase">本週期總上傳</div>
-            </div>
-            <div class="bg-white p-4 rounded-3xl shadow-sm border-b-4 border-b-green-400">
-                <div class="grid grid-cols-2 gap-1 text-[10px] font-bold leading-tight">
-                    <div class="text-red-500">主要：<span id="stat-a">0</span>件</div>
-                    <div class="text-orange-500">次要：<span id="stat-b">0</span>件</div>
-                    <div class="text-blue-500">建議：<span id="stat-c">0</span>件</div>
-                    <div class="text-green-600">維運：<span id="stat-d">0</span>件</div>
+            <div class="bg-white p-4 rounded-3xl shadow-sm border-b-4 border-b-orange-400 stat-card">
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-bold text-red-500"><span>主要:</span><span id="stat-a">0</span></div>
+                    <div class="flex justify-between text-xs font-bold text-orange-500"><span>次要:</span><span id="stat-b">0</span></div>
+                    <div class="flex justify-between text-xs font-bold text-blue-500"><span>建議:</span><span id="stat-c">0</span></div>
                 </div>
-                <div class="text-slate-300 text-[9px] mt-2 font-black uppercase tracking-tighter">本週期缺失彙整</div>
+                <div class="text-slate-300 text-[9px] mt-2 font-black uppercase tracking-wider text-center">本週缺失統計</div>
+            </div>
+            <div class="bg-white p-4 rounded-3xl shadow-sm border-b-4 border-b-green-400 stat-card">
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-bold text-green-600"><span>維運:</span><span id="stat-d">0</span></div>
+                    <div class="flex justify-between text-xs font-bold text-teal-600"><span>施工:</span><span id="stat-e">0</span></div>
+                    <div class="flex justify-between text-xs font-bold text-slate-400"><span>總計:</span><span id="stat-total">0</span></div>
+                </div>
+                <div class="text-slate-300 text-[9px] mt-2 font-black uppercase tracking-wider text-center">工程維運統計</div>
             </div>
         </div>
 
-        <section>
+        <section class="relative">
             <div class="flex justify-between items-center mb-4 px-1">
-                <h3 class="text-slate-800 font-black">本週待結案明細</h3>
-                <button id="refreshBtn" onclick="fetchHistory()" class="text-[10px] text-blue-600 font-bold bg-blue-50 px-4 py-2 rounded-full active:bg-blue-100 transition-all z-10">
-                    <i class="fa-solid fa-arrows-rotate mr-1"></i> 重新整理
+                <h3 class="text-slate-800 font-black">本週上傳明細</h3>
+                <button id="refreshBtn" onclick="fetchHistory()" class="relative z-50 text-[10px] text-blue-600 font-bold bg-white border border-blue-100 px-5 py-2 rounded-full shadow-sm active:bg-blue-600 active:text-white transition-all">
+                    <i class="fa-solid fa-arrows-rotate mr-1"></i> 點擊重新整理
                 </button>
             </div>
             <div id="history-container" class="space-y-4">
@@ -80,7 +74,7 @@
                     <button onclick="closeModal()" class="text-slate-300 text-3xl">&times;</button>
                 </div>
                 
-                <div class="space-y-5">
+                <div class="space-y-4">
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">執行倉別</label>
                         <select id="warehouse" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold">
@@ -88,11 +82,10 @@
                             <option value="新光倉">新光倉</option><option value="新光二倉">新光二倉</option>
                         </select>
                     </div>
-
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">缺失等級</label>
-                            <select id="level" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold">
+                            <select id="level" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold text-xs">
                                 <option value="主要缺失(A)">主要缺失(A)</option>
                                 <option value="次要缺失(B)">次要缺失(B)</option>
                                 <option value="建議事項(C)">建議事項(C)</option>
@@ -101,22 +94,17 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">紀錄類別</label>
-                            <select id="category" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold">
+                            <select id="category" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold text-xs">
                                 <option value="人員作業安全">1. 人員作業安全</option><option value="消防/用電安全">2. 消防/用電安全</option>
                                 <option value="環境安全衛生">3. 環境安全衛生</option><option value="設備維運">4. 設備維運</option>
                                 <option value="廠務施工">5. 廠務施工</option><option value="其他">6. 其他</option>
                             </select>
                         </div>
                     </div>
-
-                    <input type="text" id="zone" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="巡檢區域 (如：A棟 1F 碼頭)">
+                    <input type="text" id="zone" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="區域 (如：B1 碼頭)">
                     <textarea id="description" rows="3" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="缺失內容描述..."></textarea>
-                    
                     <input type="file" id="photoFile" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:bg-blue-50 file:text-blue-700 font-bold">
-
-                    <button onclick="submitForm()" id="submitBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-3xl shadow-xl hover:bg-blue-700 active:scale-95 transition-all mt-2">
-                        確認上傳資料庫
-                    </button>
+                    <button onclick="submitForm()" id="submitBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-3xl shadow-xl hover:bg-blue-700 active:scale-95 transition-all mt-2">確認上傳</button>
                 </div>
             </div>
         </div>
@@ -131,99 +119,87 @@
 
         async function fetchHistory() {
             const inspector = document.getElementById('inspector').value;
-            const warehouse = document.getElementById('viewWarehouse').value;
             const container = document.getElementById('history-container');
+            const refreshBtn = document.getElementById('refreshBtn');
+            
+            // 視覺回饋
+            refreshBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> 同步中';
+            container.innerHTML = '<div class="text-center py-20"><div class="loader"></div></div>';
             
             try {
-                const response = await fetch(`${scriptURL}?inspector=${encodeURIComponent(inspector)}&warehouse=${encodeURIComponent(warehouse)}`);
+                // 向後端請求該人員的所有倉庫紀錄
+                const response = await fetch(`${scriptURL}?inspector=${encodeURIComponent(inspector)}`);
                 const data = await response.json();
                 
-                // 計算各等級件數
-                let countA = 0, countB = 0, countC = 0, countD = 0;
+                // 初始化統計
+                let a = 0, b = 0, c = 0, d = 0, e = 0;
                 data.forEach(item => {
-                    if (item.level.includes("(A)")) countA++;
-                    else if (item.level.includes("(B)")) countB++;
-                    else if (item.level.includes("(C)")) countC++;
-                    else if (item.level.includes("維運")) countD++;
+                    if (item.level.includes("(A)")) a++;
+                    else if (item.level.includes("(B)")) b++;
+                    else if (item.level.includes("(C)")) c++;
+                    
+                    if (item.category.includes("設備維運")) d++;
+                    else if (item.category.includes("廠務施工")) e++;
                 });
 
-                document.getElementById('stat-count').innerText = data.length;
-                document.getElementById('stat-a').innerText = countA;
-                document.getElementById('stat-b').innerText = countB;
-                document.getElementById('stat-c').innerText = countC;
-                document.getElementById('stat-d').innerText = countD;
+                document.getElementById('stat-a').innerText = a;
+                document.getElementById('stat-b').innerText = b;
+                document.getElementById('stat-c').innerText = c;
+                document.getElementById('stat-d').innerText = d;
+                document.getElementById('stat-e').innerText = e;
+                document.getElementById('stat-total').innerText = data.length;
                 
                 if (data.length === 0) {
-                    container.innerHTML = `<div class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200"><p class="text-slate-400 text-sm font-bold">本週期尚無紀錄</p></div>`;
-                    return;
-                }
-
-                container.innerHTML = data.map(item => `
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 border-l-8 ${item.level.includes('A') ? 'border-l-red-500' : 'border-l-blue-400'}">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-[9px] font-black px-2 py-1 rounded bg-slate-100 text-slate-500 uppercase">${item.level}</span>
-                            <span class="text-[10px] font-bold text-slate-300">${item.date}</span>
+                    container.innerHTML = `<div class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200"><p class="text-slate-400 text-sm font-bold">本週期尚無任何紀錄</p></div>`;
+                } else {
+                    container.innerHTML = data.map(item => `
+                        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 border-l-8 ${item.level.includes('A') ? 'border-l-red-500' : 'border-l-blue-400'}">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-[9px] font-black px-2 py-1 rounded bg-slate-100 text-slate-500 uppercase">${item.warehouse} | ${item.level}</span>
+                                <span class="text-[10px] font-bold text-slate-300">${item.date}</span>
+                            </div>
+                            <h4 class="font-black text-slate-800 text-lg">${item.zone}</h4>
+                            <p class="text-[10px] font-bold text-blue-500 mt-1 italic">${item.category}</p>
+                            <p class="text-sm text-slate-500 mt-2 mb-4 leading-relaxed">${item.desc}</p>
+                            ${item.photo && item.photo !== "無照片" ? `<a href="${item.photo}" target="_blank" class="inline-flex items-center text-[10px] font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-xl"><i class="fa-solid fa-image mr-2"></i> 查看照片檔案</a>` : ''}
                         </div>
-                        <h4 class="font-black text-slate-800 text-lg">${item.zone}</h4>
-                        <div class="text-[10px] font-bold text-blue-500 mt-1 mb-1 italic">類別：${item.category}</div>
-                        <p class="text-sm text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
-                        ${item.photo && item.photo !== "無照片" ? `
-                            <a href="${item.photo}" target="_blank" class="inline-flex items-center text-[10px] font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-xl">
-                                <i class="fa-solid fa-image mr-2"></i> 查看巡檢照片
-                            </a>` : ''}
-                    </div>
-                `).join('');
-            } catch (e) {
-                container.innerHTML = '<p class="text-red-400 text-center py-10 font-bold">連線異常，請手動刷新頁面</p>';
+                    `).join('');
+                }
+            } catch (err) {
+                container.innerHTML = '<p class="text-red-400 text-center py-10 font-bold">網路不穩定，請手動下拉刷新</p>';
+            } finally {
+                refreshBtn.innerHTML = '<i class="fa-solid fa-arrows-rotate mr-1"></i> 重新整理';
             }
         }
 
         async function submitForm() {
             const btn = document.getElementById('submitBtn');
             const fileInput = document.getElementById('photoFile');
-            const zone = document.getElementById('zone').value;
-            const description = document.getElementById('description').value;
-
-            if (!zone || !description) { alert('請填寫巡檢區域與描述！'); return; }
-
-            btn.disabled = true;
-            btn.innerText = "資料同步中...";
-
+            const inspector = document.getElementById('inspector').value;
             const data = {
-                inspector: document.getElementById('inspector').value,
+                inspector: inspector,
                 warehouse: document.getElementById('warehouse').value,
                 level: document.getElementById('level').value,
                 category: document.getElementById('category').value,
-                zone: zone,
-                description: description,
+                zone: document.getElementById('zone').value,
+                description: document.getElementById('description').value,
                 photoData: ""
             };
 
-            try {
-                if (fileInput.files.length > 0) {
-                    data.photoData = await compressImage(fileInput.files[0], 800, 0.7);
-                }
+            if (!data.zone || !data.description) { alert('請填寫完整內容！'); return; }
+            btn.disabled = true; btn.innerText = "資料上傳中...";
 
-                // 傳送 POST 請求
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    mode: 'no-cors', // 解決跨域問題
-                    body: JSON.stringify(data)
-                });
-                
-                alert('✅ 巡檢紀錄提交成功！');
+            try {
+                if (fileInput.files.length > 0) data.photoData = await compressImage(fileInput.files[0], 800, 0.7);
+                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+                alert('✅ 提交成功！已匯入試算表。');
                 closeModal();
-                fetchHistory(); // 自動重新讀取明細與統計
-                
-                // 清空表單
-                document.getElementById('zone').value = '';
-                document.getElementById('description').value = '';
-                fileInput.value = '';
+                fetchHistory(); // 自動重新整理
+                document.getElementById('zone').value = ''; document.getElementById('description').value = ''; fileInput.value = '';
             } catch (e) {
                 alert('上傳失敗：' + e.message);
             } finally {
-                btn.disabled = false;
-                btn.innerText = "確認上傳資料庫";
+                btn.disabled = false; btn.innerText = "確認上傳";
             }
         }
 
