@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日翊職安巡檢智慧系統 3.7</title>
+    <title>日翊職安巡檢智慧系統 3.9</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -17,7 +17,7 @@
     <div class="max-w-md mx-auto">
         <header class="bg-white p-5 rounded-3xl shadow-sm mb-4 border border-slate-100">
             <h1 class="text-xl font-black text-slate-800 mb-4 tracking-tighter text-center">職安巡檢智慧系統</h1>
-            <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">目前巡檢人員</label>
+            <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">巡檢人員</label>
             <select id="inspector" onchange="fetchHistory()" class="w-full bg-slate-50 p-4 rounded-2xl text-lg font-bold border-none focus:ring-2 focus:ring-blue-500 shadow-inner">
                 <option value="陳柏宏">1. 陳柏宏</option>
                 <option value="莊文淮">2. 莊文淮</option>
@@ -37,9 +37,9 @@
             </div>
             <div class="bg-white p-4 rounded-3xl shadow-sm border-b-4 border-b-green-400">
                 <div class="space-y-1">
-                    <div class="flex justify-between text-[11px] font-bold text-green-600"><span>設備維運:</span><span id="stat-d">0</span></div>
-                    <div class="flex justify-between text-[11px] font-bold text-teal-600"><span>廠務施工:</span><span id="stat-e">0</span></div>
-                    <div class="flex justify-between text-[11px] font-bold text-slate-400"><span>總計筆數:</span><span id="stat-total">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-green-600"><span>維運:</span><span id="stat-d">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-teal-600"><span>施工:</span><span id="stat-e">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-slate-400"><span>總計:</span><span id="stat-total">0</span></div>
                 </div>
                 <div class="text-slate-300 text-[9px] mt-2 font-black uppercase text-center border-t pt-1">工程維運統計</div>
             </div>
@@ -67,7 +67,6 @@
                     <h2 class="text-2xl font-black text-slate-800">新增巡檢項目</h2>
                     <button onclick="closeModal()" class="text-slate-300 text-3xl">&times;</button>
                 </div>
-                
                 <div class="space-y-4 text-sm">
                     <select id="warehouse" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold">
                         <option value="大溪倉">大溪倉</option><option value="大肚倉">大肚倉</option><option value="岡山倉">岡山倉</option>
@@ -84,17 +83,16 @@
                             <option value="廠務施工">廠務施工</option><option value="其他">其他</option>
                         </select>
                     </div>
-                    <input type="text" id="zone" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="巡檢區域 (如：A棟 1F)">
-                    <textarea id="description" rows="2" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="具體描述內容..."></textarea>
+                    <input type="text" id="zone" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="巡檢區域">
+                    <textarea id="description" rows="2" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="具體描述..."></textarea>
                     <input type="file" id="photoFile" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:bg-blue-50 file:text-blue-700 font-bold">
-                    <button onclick="submitForm()" id="submitBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-3xl shadow-xl hover:bg-blue-700 active:scale-95 transition-all mt-2">確認提交上傳</button>
+                    <button onclick="submitForm()" id="submitBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-3xl shadow-xl hover:bg-blue-700 active:scale-95 transition-all">確認提交</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 核心連結：已更新為您最新的 Apps Script URL
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwVG5nTxjkxxMNssbg4FEdY1Fl4I6e_Z_pk7fFdKNrcp9hP5vhQhs8UG_JaCC2fdhR3/exec';
 
         window.onload = fetchHistory;
@@ -105,6 +103,7 @@
             const inspector = document.getElementById('inspector').value;
             const container = document.getElementById('history-container');
             const refreshBtn = document.getElementById('refreshBtn');
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
             refreshBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> 同步中';
             container.innerHTML = '<div class="text-center py-20"><div class="loader"></div></div>';
@@ -118,7 +117,6 @@
                     if (item.level.includes("(A)")) a++;
                     else if (item.level.includes("(B)")) b++;
                     else if (item.level.includes("(C)")) c++;
-                    
                     if (item.category.includes("設備維運")) d++;
                     else if (item.category.includes("廠務施工")) e++;
                 });
@@ -131,9 +129,17 @@
                 document.getElementById('stat-total').innerText = data.length;
                 
                 if (data.length === 0) {
-                    container.innerHTML = `<div class="text-center py-10 bg-white rounded-3xl border border-dashed border-slate-200"><p class="text-slate-400 text-sm font-bold">本週期 (週四起) 尚無紀錄</p></div>`;
+                    container.innerHTML = `<div class="text-center py-10 bg-white rounded-3xl border border-dashed border-slate-200"><p class="text-slate-400 text-sm font-bold">本週期尚無紀錄</p></div>`;
                 } else {
-                    container.innerHTML = data.map(item => `
+                    container.innerHTML = data.map(item => {
+                        let finalLink = item.photo;
+                        // 核心邏輯：手機裝置自動切換為下載格式(直接出圖)，電腦版維持預覽格式
+                        if (isMobile && finalLink.includes('/file/d/')) {
+                            const fileId = finalLink.split('/d/')[1].split('/')[0];
+                            finalLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                        }
+
+                        return `
                         <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 border-l-8 ${item.level.includes('A') ? 'border-l-red-500' : 'border-l-blue-400'}">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-[9px] font-black px-2 py-1 rounded bg-slate-100 text-slate-500 uppercase">${item.warehouse}</span>
@@ -142,12 +148,12 @@
                             <h4 class="font-black text-slate-800 text-lg">${item.zone}</h4>
                             <p class="text-[10px] font-bold text-blue-500 mb-1">${item.level} | ${item.category}</p>
                             <p class="text-sm text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
-                            ${item.photo && item.photo.includes("http") ? `
-                                <a href="${item.photo}" target="_blank" class="inline-flex items-center text-[10px] font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-xl">
-                                    <i class="fa-solid fa-image mr-2"></i> 點此開啟現場照片 (3x4)
+                            ${finalLink.includes("http") ? `
+                                <a href="${finalLink}" target="_blank" class="inline-flex items-center text-[10px] font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-xl">
+                                    <i class="fa-solid fa-image mr-2"></i> 查看現場照片 (3x4)
                                 </a>` : ''}
-                        </div>
-                    `).join('');
+                        </div>`;
+                    }).join('');
                 }
             } catch (err) {
                 container.innerHTML = '<p class="text-red-400 text-center py-10 font-bold">資料格式同步中，請按重新整理</p>';
@@ -168,16 +174,16 @@
                 description: document.getElementById('description').value,
                 photoData: ""
             };
-            if (!data.zone || !data.description) { alert('請填寫完整巡檢資訊！'); return; }
-            btn.disabled = true; btn.innerText = "資料上傳中...";
+            if (!data.zone || !data.description) { alert('請填寫巡檢區域與內容！'); return; }
+            btn.disabled = true; btn.innerText = "資料同步中...";
             try {
                 if (fileInput.files.length > 0) data.photoData = await compressImage(fileInput.files[0], 800, 0.7);
                 await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-                alert('✅ 上傳成功！資料已匯入 Excel。');
+                alert('✅ 提交成功！');
                 closeModal();
                 fetchHistory();
                 document.getElementById('zone').value = ''; document.getElementById('description').value = ''; fileInput.value = '';
-            } catch (e) { alert('系統忙碌中：' + e.message); } finally { btn.disabled = false; btn.innerText = "確認提交上傳"; }
+            } catch (e) { alert('提交失敗：' + e.message); } finally { btn.disabled = false; btn.innerText = "確認提交"; }
         }
 
         function compressImage(file, maxWidth, quality) {
