@@ -3,51 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日翊職安巡檢看板 3.5</title>
+    <title>日翊職安巡檢看板 3.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* 提升按鈕在手機上的反應速度與範圍 */
         * { -webkit-tap-highlight-color: transparent; }
-        #refreshBtn { cursor: pointer; position: relative; z-index: 50; }
+        /* 確保重新整理按鈕在手機上的層級與反應 */
+        #refreshBtn { cursor: pointer; position: relative; z-index: 50; touch-action: manipulation; }
     </style>
 </head>
 <body class="p-4 bg-slate-50 pb-24 font-sans text-slate-900">
     <div class="max-w-md mx-auto">
-        <header class="bg-white p-5 rounded-3xl shadow-sm mb-4 border border-slate-100 relative z-10">
+        <header class="bg-white p-5 rounded-3xl shadow-sm mb-4 border border-slate-100">
             <h1 class="text-xl font-black text-slate-800 mb-4 tracking-tighter text-center">職安巡檢智慧系統</h1>
-            <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">目前巡檢人員</label>
+            <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">巡檢人員</label>
             <select id="inspector" onchange="fetchHistory()" class="w-full bg-slate-50 p-4 rounded-2xl text-lg font-bold border-none focus:ring-2 focus:ring-blue-500 shadow-inner">
                 <option value="陳柏宏">1. 陳柏宏</option>
                 <option value="莊文淮">2. 莊文淮</option>
                 <option value="林澐緗">3. 林澐緗</option>
                 <option value="呂胤鋒">4. 呂胤鋒</option>
             </select>
-            <p class="text-[9px] text-slate-400 mt-2 text-center">* 系統自動彙整該員本週期（週四起）之全倉庫紀錄</p>
         </header>
 
         <div class="grid grid-cols-2 gap-3 mb-6">
             <div class="bg-white p-4 rounded-3xl shadow-sm border-b-4 border-b-orange-400">
                 <div class="space-y-1">
-                    <div class="flex justify-between text-[11px] font-bold text-red-600"><span>主要缺失:</span><span id="stat-a">0</span></div>
-                    <div class="flex justify-between text-[11px] font-bold text-orange-500"><span>次要缺失:</span><span id="stat-b">0</span></div>
-                    <div class="flex justify-between text-[11px] font-bold text-blue-500"><span>建議事項:</span><span id="stat-c">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-red-600"><span>主要:</span><span id="stat-a">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-orange-500"><span>次要:</span><span id="stat-b">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-blue-500"><span>建議:</span><span id="stat-c">0</span></div>
                 </div>
-                <div class="text-slate-300 text-[9px] mt-2 font-black uppercase text-center tracking-widest border-t pt-1">本週缺失統計</div>
+                <div class="text-slate-300 text-[9px] mt-2 font-black uppercase text-center border-t pt-1">本週缺失統計</div>
             </div>
             <div class="bg-white p-4 rounded-3xl shadow-sm border-b-4 border-b-green-400">
                 <div class="space-y-1">
-                    <div class="flex justify-between text-[11px] font-bold text-green-600"><span>設備維運:</span><span id="stat-d">0</span></div>
-                    <div class="flex justify-between text-[11px] font-bold text-teal-600"><span>廠務施工:</span><span id="stat-e">0</span></div>
-                    <div class="flex justify-between text-[11px] font-bold text-slate-400"><span>總計筆數:</span><span id="stat-total">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-green-600"><span>維運:</span><span id="stat-d">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-teal-600"><span>施工:</span><span id="stat-e">0</span></div>
+                    <div class="flex justify-between text-[11px] font-bold text-slate-400"><span>總計:</span><span id="stat-total">0</span></div>
                 </div>
-                <div class="text-slate-300 text-[9px] mt-2 font-black uppercase text-center tracking-widest border-t pt-1">工程維運統計</div>
+                <div class="text-slate-300 text-[9px] mt-2 font-black uppercase text-center border-t pt-1">工程維運統計</div>
             </div>
         </div>
 
-        <section class="relative">
+        <section>
             <div class="flex justify-between items-center mb-4 px-1">
                 <h3 class="text-slate-800 font-black">本週個人上傳明細</h3>
                 <button id="refreshBtn" onclick="fetchHistory()" class="text-[10px] text-blue-600 font-bold bg-white border border-blue-100 px-5 py-2 rounded-full shadow-sm active:bg-blue-600 active:text-white transition-all">
@@ -101,29 +100,26 @@
                         </div>
                     </div>
                     <input type="text" id="zone" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="區域 (如：A棟 1F 碼頭)">
-                    <textarea id="description" rows="2" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="缺失內容或維運描述..."></textarea>
+                    <textarea id="description" rows="2" class="w-full p-4 bg-slate-50 border-none rounded-2xl font-bold" placeholder="描述內容..."></textarea>
                     <input type="file" id="photoFile" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:bg-blue-50 file:text-blue-700 font-bold">
-                    <button onclick="submitForm()" id="submitBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-3xl shadow-xl hover:bg-blue-700 active:scale-95 transition-all mt-2">確認提交雲端</button>
+                    <button onclick="submitForm()" id="submitBtn" class="w-full bg-blue-600 text-white font-black py-5 rounded-3xl shadow-xl hover:bg-blue-700 active:scale-95 transition-all">確認提交</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 已嵌入您提供的最新 URL
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwVG5nTxjkxxMNssbg4FEdY1Fl4I6e_Z_pk7fFdKNrcp9hP5vhQhs8UG_JaCC2fdhR3/exec';
 
         window.onload = fetchHistory;
         function openModal() { document.getElementById('upload-modal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('upload-modal').classList.add('hidden'); }
 
-        // 核心功能：讀取該人員在本週期的所有倉庫紀錄
         async function fetchHistory() {
             const inspector = document.getElementById('inspector').value;
             const container = document.getElementById('history-container');
             const refreshBtn = document.getElementById('refreshBtn');
             
-            // UI 回饋
             refreshBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> 同步中';
             container.innerHTML = '<div class="text-center py-20"><div class="loader"></div></div>';
             
@@ -131,7 +127,6 @@
                 const response = await fetch(`${scriptURL}?inspector=${encodeURIComponent(inspector)}`);
                 const data = await response.json();
                 
-                // 統計數據
                 let a = 0, b = 0, c = 0, d = 0, e = 0;
                 data.forEach(item => {
                     if (item.level.includes("(A)")) a++;
@@ -150,7 +145,7 @@
                 document.getElementById('stat-total').innerText = data.length;
                 
                 if (data.length === 0) {
-                    container.innerHTML = `<div class="text-center py-10 bg-white rounded-3xl border border-dashed border-slate-200"><p class="text-slate-400 text-sm font-bold">本週期尚無任何紀錄</p></div>`;
+                    container.innerHTML = `<div class="text-center py-10 bg-white rounded-3xl border border-dashed border-slate-200"><p class="text-slate-400 text-sm font-bold">本週期尚無紀錄</p></div>`;
                 } else {
                     container.innerHTML = data.map(item => `
                         <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 border-l-8 ${item.level.includes('A') ? 'border-l-red-500' : 'border-l-blue-400'}">
@@ -161,12 +156,12 @@
                             <h4 class="font-black text-slate-800 text-lg">${item.zone}</h4>
                             <p class="text-[10px] font-bold text-blue-500 mb-1">${item.level} | ${item.category}</p>
                             <p class="text-sm text-slate-500 mb-4 leading-relaxed">${item.desc}</p>
-                            ${item.photo && item.photo.includes("http") ? `<a href="${item.photo}" target="_blank" class="inline-flex items-center text-[10px] font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-xl"><i class="fa-solid fa-image mr-2"></i> 查看照片</a>` : ''}
+                            ${item.photo && item.photo.includes("IMAGE") ? `<div class="text-[10px] text-green-500 font-bold bg-green-50 px-3 py-1 rounded-lg inline-block"><i class="fa-solid fa-check-double mr-1"></i> 已生成 3x4 縮圖至試算表</div>` : (item.photo && item.photo.includes("http") ? `<a href="${item.photo}" target="_blank" class="inline-flex items-center text-[10px] font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-xl"><i class="fa-solid fa-image mr-2"></i> 查看原圖</a>` : '')}
                         </div>
                     `).join('');
                 }
             } catch (err) {
-                container.innerHTML = '<p class="text-red-400 text-center py-10 font-bold">連線逾時，請檢查網路或重新整理</p>';
+                container.innerHTML = '<p class="text-red-400 text-center py-10 font-bold">同步連線失敗，請稍後再試</p>';
             } finally {
                 refreshBtn.innerHTML = '<i class="fa-solid fa-arrows-rotate mr-1"></i> 重新整理';
             }
@@ -184,39 +179,29 @@
                 description: document.getElementById('description').value,
                 photoData: ""
             };
-
-            if (!data.zone || !data.description) { alert('請填寫完整內容！'); return; }
+            if (!data.zone || !data.description) { alert('請填寫巡檢區域與內容！'); return; }
             btn.disabled = true; btn.innerText = "資料同步中...";
-
             try {
                 if (fileInput.files.length > 0) data.photoData = await compressImage(fileInput.files[0], 800, 0.7);
-                // POST 資料到 Apps Script
                 await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-                alert('✅ 提交成功！');
+                alert('✅ 巡檢資料已成功上傳！');
                 closeModal();
-                fetchHistory(); // 自動重整明細
+                fetchHistory();
                 document.getElementById('zone').value = ''; document.getElementById('description').value = ''; fileInput.value = '';
-            } catch (e) {
-                alert('提交出錯：' + e.message);
-            } finally {
-                btn.disabled = false; btn.innerText = "確認提交雲端";
-            }
+            } catch (e) { alert('上傳失敗：' + e.message); } finally { btn.disabled = false; btn.innerText = "確認提交"; }
         }
 
         function compressImage(file, maxWidth, quality) {
             return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
+                const reader = new FileReader(); reader.readAsDataURL(file);
                 reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
+                    const img = new Image(); img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         let width = img.width, height = img.height;
                         if (width > maxWidth) { height = (maxWidth / width) * height; width = maxWidth; }
                         canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
                         resolve(canvas.toDataURL('image/jpeg', quality));
                     };
                 };
